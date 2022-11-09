@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:nvm-runner.helloWorld"
+    "onCommand:nvm-runner.nvmRunner"
   ],
   "main": "./out/extension.js",
   "contributes": {
