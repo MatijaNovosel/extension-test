@@ -6,6 +6,11 @@
   "engines": {
     "vscode": "^1.73.0"
   },
+  "publisher": "MatijaNovosel",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/MatijaNovosel/extension-test.git"
+  },
   "categories": [
     "Other"
   ],
