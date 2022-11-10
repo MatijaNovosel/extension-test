@@ -1,6 +1,17 @@
 import * as vscode from "vscode";
 const commandExists = require("command-exists-promise");
 const fs = require("fs");
+const { promisify } = require("util");
+const exec = promisify(require("child_process").exec);
+
+const getNodeVersions = async () => {
+  const output = (await exec("nvm list")).stdout.trim();
+  const versions = [...output.matchAll(/\d+(?:\.\d+)*/g)]
+    .map((m) => m[0])
+    .filter((m: string) => !/^\d+$/.test(m));
+
+  return versions;
+};
 
 export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
@@ -30,11 +41,30 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      let wf = vscode.workspace.workspaceFolders![0].uri.path;
-      let f = vscode.workspace.workspaceFolders![0].uri.fsPath;
+      const f = vscode.workspace.workspaceFolders![0].uri.fsPath;
+      const configFilePath = `${f}/.nvm`;
+      const configFileExists = fs.existsSync(configFilePath);
 
+      if (!configFileExists) {
+        vscode.window.showErrorMessage(
+          "To run this command you need to have a .nvm file defined at the root of your project!"
+        );
+        return;
+      }
+
+      const configFileVersion = fs.readFileSync(configFilePath).toString();
+      const nodeVersions = await getNodeVersions();
+
+      if (!nodeVersions.includes(configFileVersion)) {
+        vscode.window.showErrorMessage(
+          "The version in your config file does not match installed NVM Node versions!"
+        );
+        return;
+      }
+
+      await exec(`nvm use ${configFileVersion}`);
       vscode.window.showInformationMessage(
-        `YOUR-EXTENSION: folder: ${wf} - ${f}`
+        `You are now using Node version ${configFileVersion}!`
       );
     }
   );
