@@ -6,10 +6,22 @@ export function activate(context: vscode.ExtensionContext) {
   const disposable = vscode.commands.registerCommand(
     "nvm-runner.nvmRunner",
     async () => {
+      const inDirectory = vscode.workspace.workspaceFolders !== undefined;
       const nvmExists = await commandExists("nvm");
-      const configFileExists = await fs.existsSync(".test");
+      const nodeExists = await commandExists("node");
 
-      console.log(configFileExists);
+      if (!inDirectory) {
+        vscode.window.showErrorMessage(
+          "Working directory not found, open a directory an try again!"
+        );
+      }
+
+      if (!nodeExists) {
+        vscode.window.showErrorMessage(
+          "To run this command you need to have Node installed!"
+        );
+        return;
+      }
 
       if (!nvmExists) {
         vscode.window.showErrorMessage(
@@ -18,7 +30,12 @@ export function activate(context: vscode.ExtensionContext) {
         return;
       }
 
-      // The code you place here will be executed every time your command is executed
+      let wf = vscode.workspace.workspaceFolders![0].uri.path;
+      let f = vscode.workspace.workspaceFolders![0].uri.fsPath;
+
+      vscode.window.showInformationMessage(
+        `YOUR-EXTENSION: folder: ${wf} - ${f}`
+      );
     }
   );
 
