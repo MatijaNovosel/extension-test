@@ -5,6 +5,10 @@
 
 - Sets the current Node version to the one specified in a .nvm file at the root of your repository
 
+## Requirements
+
+Create a `.nvm` file at the root of your repository with your desired Node version, be sure to have the version installed in NVM though.
+
 ## Release Notes
 
 ### 1.0.0
